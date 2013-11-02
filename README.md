@@ -13,6 +13,11 @@ Run fresh instance of an Octopress:
 
     docker run -i -t -entrypoint="/bin/bash" wujtruj/octopress
 
+Inside docker:
+    
+    cd /srv/octopress-master
+    rake preview
+
 Check port and navigate to `http://localhost:port`
 
 ### Permanent config
