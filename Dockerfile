@@ -1,13 +1,20 @@
 FROM ubuntu
 MAINTAINER wujtruj <wujtruj@engineer.com>
 
-# update OS
-RUN echo "deb http://archive.ubuntu.com/ubuntu precise main universe" > /etc/apt/sources.list
-RUN apt-get update
-RUN apt-get upgrade -y
-
 # Install depndencies
-RUN apt-get install -y unzip wget ruby1.9.1-dev build-essential
+RUN apt-get update && apt-get install -y \
+    unzip \
+    wget \
+    ruby1.9.3 \
+    nodejs \
+    nginx \
+    build-essential
+
+# Set proper locales
+RUN echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen && \
+    locale-gen en_US.utf8 && \
+    /usr/sbin/update-locale LANG=en_US.UTF-8
+ENV LC_ALL en_US.UTF-8
 
 # Build Octopress from github
 RUN wget --no-check-certificate -O /tmp/octopress.zip https://github.com/imathis/octopress/archive/master.zip
@@ -19,9 +26,6 @@ WORKDIR /srv/octopress-master
 RUN gem install bundler
 RUN bundle install
 
-# Install the default theme
-RUN rake install
-
 # Link config files to the mapped directory
 RUN mkdir config
 RUN mv Rakefile config/
@@ -29,8 +33,19 @@ RUN mv _config.yml config/
 RUN ln -s config/Rakefile .
 RUN ln -s config/_config.yml
 
-# Expose default Octopress port
-EXPOSE 4000
+# Install the default theme
+RUN rake install
+
+# Generate static page and link it to nginx webserver
+# RUN rake generate
+RUN rm -rf /usr/share/nginx/html && \
+    ln -s /srv/octopress-master/public/ /usr/share/nginx/html 
+
+# Disable nginx daemon mode
+RUN echo "daemon off;" >> /etc/nginx/nginx.conf
+
+# Expose default nginx port
+EXPOSE 80
 
 # Run Octopress
-ENTRYPOINT ["rake", "preview"]
+CMD rake generate && nginx

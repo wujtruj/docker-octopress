@@ -1,35 +1,20 @@
 Octopress framework Dockerfile
 ==============================
 
-Dockerfile to build an Octopress image of the [Octopress framework](https://github.com/imathis/octopress) for [Jekyll](https://github.com/mojombo/jekyll)
+Dockerfile to build an Octopress image of the [Octopress framework](https://github.com/imathis/octopress)
 
 ## Deploy from index.docker.io
 
-    docker pull wujtruj/octopress
-
-### Interactive shell 
-
-Run fresh instance of an Octopress:
-
-    docker run -i -t -entrypoint="/bin/bash" wujtruj/octopress
-
-Inside docker:
-    
-    cd /srv/octopress-master
-    rake preview
-
-Check port and navigate to `http://localhost:port`
-
-### Permanent config
-
 To run an instance with persistant config and posts, You have to map local directory with Octopress files:
 
+    docker pull wujtruj/octopress
     git clone https://github.com/wujtruj/docker-octopress
     cd docker-octopress
-    docker run -d -v `pwd`/posts:/srv/octopress-master/source/_posts -v `pwd`/config:/srv/octopress-master/config -p 80:4000 wujtruj/octopress
+    docker run -d -v `pwd`/source:/srv/octopress-master/source -v `pwd`/config:/srv/octopress-master/config -p 4000:80 wujtruj/octopress
 
 Edit `config/` files to meet Your needs  
-Then navigate to `http://localhost`
+Writes posts in `source/_posts/`
+Then navigate to `http://localhost:4000`
 
 ## Roll your own image
 
@@ -37,27 +22,34 @@ To build your own image, run `sudo docker build -t <image_name> .` in the direct
 
 ## Blogging with Octopress
 
-2 ways of doing this
+2 ways of doing this:
 
-### Automatic (if You are in an interactive shell)
+### Automatic
+
+Run an interactive shell:
+
+    docker run -v `pwd`/source:/srv/octopress-master/source -v `pwd`/config:/srv/octopress-master/config -p 4000:80 -i -t --entrypoint="/bin/bash" wujtruj/octopress
 
     rake new_post["Post title"]
 
-Then You edit it in `posts` directory.
+Then you edit it in `source/_posts/` directory.
+When you finish writing new post, it can be published by re-running Octopress container in daemon mode.
 
 ### Manual
 
-In `posts` directory create `YYYY-MM-DD-title.markdown` file:
+In `source/_posts` directory create `YYYY-MM-DD-title.markdown` file:
     
     ---
     layout: post
-    title: "Hello World"
-    date: 2013-11-01 11:11
+    title: "Post Title"
+    date: YYYY-MM-DD HH:MM
     comments: true
     categories: General
     ---
     **Hello World!**
     This an example post with very short content
+
+Then restart container.
 
 ## License
 
