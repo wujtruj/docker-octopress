@@ -1,11 +1,12 @@
 FROM ubuntu
-MAINTAINER wujtruj <wujtruj@engineer.com>
 
 # Install depndencies
 RUN apt-get update && apt-get install -y \
     unzip \
     wget \
-    ruby1.9.3 \
+    git \
+    ruby2.3 \
+    ruby2.3-dev \
     nodejs \
     nginx \
     build-essential
@@ -38,8 +39,8 @@ RUN rake install
 
 # Generate static page and link it to nginx webserver
 # RUN rake generate
-RUN rm -rf /usr/share/nginx/html && \
-    ln -s /srv/octopress-master/public/ /usr/share/nginx/html 
+RUN rm -rf /var/www/html && \
+    ln -s /srv/octopress-master/public/ /var/www/html
 
 # Disable nginx daemon mode
 RUN echo "daemon off;" >> /etc/nginx/nginx.conf
