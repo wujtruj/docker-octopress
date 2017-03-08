@@ -10,9 +10,10 @@ To run an instance with persistant config and posts, You have to map local direc
     docker pull wujtruj/octopress
     git clone https://github.com/wujtruj/docker-octopress
     cd docker-octopress
-    docker run -d -v `pwd`/source:/srv/octopress-master/source -v `pwd`/config:/srv/octopress-master/config -p 4000:80 wujtruj/octopress
+    docker run -d -v `pwd`/source:/srv/octopress-master/source -v `pwd`/config:/srv/octopress-master/config -v `pwd`/themes:/srv/octopress-master/.themes -p 4000:80 wujtruj/octopress
 
 Edit `config/` files to meet Your needs  
+Install themes in `themes/` and mount to `.themes/`. Then run `rake install['<theme name here>']`  
 Writes posts in `source/_posts/`
 Then navigate to `http://localhost:4000`
 
